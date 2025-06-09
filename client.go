@@ -21,11 +21,10 @@ const (
 )
 
 type XUIClient struct {
-	core         *XUICore
-	enableLogger bool
+	core *XUICore
 }
 
-func NewClient(host, username, password string) *XUIClient {
+func NewClient(host, username, password string, enableLogger bool) *XUIClient {
 	coreClient := &fasthttp.Client{
 		DialTimeout: func(addr string, timeout time.Duration) (net.Conn, error) {
 			return net.DialTimeout("tcp", addr, timeout)
@@ -35,7 +34,7 @@ func NewClient(host, username, password string) *XUIClient {
 	}
 
 	return &XUIClient{
-		core: &XUICore{httpClient: coreClient, host: host, username: username, password: password, logger: true},
+		core: &XUICore{httpClient: coreClient, host: host, username: username, password: password, logger: enableLogger},
 	}
 }
 
