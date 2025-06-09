@@ -17,10 +17,12 @@ const (
 	_addClient    string = "/panel/api/inbounds/addClient"
 	_deleteClient string = "/panel/api/inbounds/{inboundId}/delClient/{uuid}"
 	_updateClient string = "/panel/api/inbounds/updateClient/{uuid}"
+	_getStatus    string = "/server/status"
 )
 
 type XUIClient struct {
-	core *XUICore
+	core         *XUICore
+	enableLogger bool
 }
 
 func NewClient(host, username, password string) *XUIClient {
@@ -33,7 +35,7 @@ func NewClient(host, username, password string) *XUIClient {
 	}
 
 	return &XUIClient{
-		core: &XUICore{httpClient: coreClient, host: host, username: username, password: password},
+		core: &XUICore{httpClient: coreClient, host: host, username: username, password: password, logger: true},
 	}
 }
 
@@ -147,4 +149,18 @@ func (c *XUIClient) UpdateClient(inboundId int, clientUuid string, inboundClient
 		return response.Err(endpoint)
 	}
 	return nil
+}
+
+func (c *XUIClient) GetStatus() (*ServerStatus, error) {
+	var response APIResponse[ServerStatus]
+
+	err := c.core.ApiCall("POST", _getStatus, nil, &response)
+
+	if err != nil {
+		return nil, err
+	}
+	if !response.Success {
+		return nil, response.Err(_getStatus)
+	}
+	return &response.Obj, nil
 }

@@ -12,6 +12,7 @@ type XUICore struct {
 	httpClient               *fasthttp.Client
 	host, username, password string
 	sessionCookie            string
+	logger                   bool
 }
 
 func (core *XUICore) login() error {
@@ -141,7 +142,9 @@ func (core *XUICore) Post(endpoint string, data any, target any) (int, error) {
 		return 0, err
 	}
 
-	log.Println("POST response:", string(resp.Body()))
+	if core.logger {
+		log.Println("POST response:", string(resp.Body()))
+	}
 
 	if target != nil {
 		body := resp.Body()
@@ -181,7 +184,9 @@ func (core *XUICore) Get(endpoint string, target any) (int, error) {
 		return 0, err
 	}
 
-	log.Println("GET response:", string(resp.Body()))
+	if core.logger {
+		log.Println("GET response:", string(resp.Body()))
+	}
 
 	if target != nil {
 		body := resp.Body()
