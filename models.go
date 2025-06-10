@@ -65,16 +65,17 @@ func (s *Settings) UnmarshalJSON(data []byte) error {
 
 type InboundClient struct {
 	Comment    string `json:"comment"`
-	Email      string `json:"email"`
+	Email      string `json:"email,omitempty"`
+	Password   string `json:"password,omitempty"`
 	Enable     bool   `json:"enable"`
-	ExpiryTime int64  `json:"expiryTime"`
-	Flow       string `json:"flow"`
-	ID         string `json:"id"`
-	LimitIp    int    `json:"limitIp"`
-	Reset      int    `json:"reset"`
-	SubId      string `json:"subId"`
-	TgId       any    `json:"tgId"`
-	TotalGB    int    `json:"totalGB"`
+	ExpiryTime int64  `json:"expiryTime,omitempty"`
+	Flow       string `json:"flow,omitempty"`
+	ID         string `json:"id,omitempty"`
+	LimitIp    int    `json:"limitIp,omitempty"`
+	Reset      int    `json:"reset,omitempty"`
+	SubId      string `json:"subId,omitempty"`
+	TgId       any    `json:"tgId,omitempty"`
+	TotalGB    int    `json:"totalGB,omitempty"`
 }
 
 type StreamSettings struct {
