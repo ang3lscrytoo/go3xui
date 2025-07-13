@@ -3,8 +3,10 @@ package go3xui
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/valyala/fasthttp"
 	"net"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -17,14 +19,13 @@ const (
 	_addClient    string = "/panel/api/inbounds/addClient"
 	_deleteClient string = "/panel/api/inbounds/{inboundId}/delClient/{uuid}"
 	_updateClient string = "/panel/api/inbounds/updateClient/{uuid}"
-	_getStatus    string = "/server/status"
 )
 
 type XUIClient struct {
 	core *XUICore
 }
 
-func NewClient(host, username, password string, enableLogger bool) *XUIClient {
+func NewClient(host, username, password string) *XUIClient {
 	coreClient := &fasthttp.Client{
 		DialTimeout: func(addr string, timeout time.Duration) (net.Conn, error) {
 			return net.DialTimeout("tcp", addr, timeout)
@@ -34,7 +35,7 @@ func NewClient(host, username, password string, enableLogger bool) *XUIClient {
 	}
 
 	return &XUIClient{
-		core: &XUICore{httpClient: coreClient, host: host, username: username, password: password, logger: enableLogger},
+		core: &XUICore{httpClient: coreClient, host: host, username: username, password: password},
 	}
 }
 
@@ -150,16 +151,13 @@ func (c *XUIClient) UpdateClient(inboundId int, clientUuid string, inboundClient
 	return nil
 }
 
-func (c *XUIClient) GetStatus() (*ServerStatus, error) {
-	var response APIResponse[ServerStatus]
-
-	err := c.core.ApiCall("POST", _getStatus, nil, &response)
-
+func (c *XUIClient) GetIP() (string, error) {
+	parsedURL, err := url.Parse(c.core.host)
 	if err != nil {
-		return nil, err
+		fmt.Println("Ошибка парсинга URL:", err)
+		return "", errors.New("incorrect URL host")
 	}
-	if !response.Success {
-		return nil, response.Err(_getStatus)
-	}
-	return &response.Obj, nil
+
+	host := parsedURL.Hostname()
+	return host, nil
 }
